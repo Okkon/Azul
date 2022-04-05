@@ -5,10 +5,12 @@ import model.*;
 import swing.controler.SwingController;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.awt.GridBagConstraints.WEST;
 import static model.GameConstants.*;
 
 @Getter
@@ -23,9 +25,33 @@ public class PlayerBoard extends JPanel {
         setLayout(new GridBagLayout());
         controller.bindPlayerToBoard(player, this);
 
+        createScoreDisplay();
+        createNameLabel();
         createStockLineElements();
         createMainFieldElements();
         createPenaltyLineElements();
+    }
+
+    private void createNameLabel() {
+        JLabel label = new JLabel(player.getName());
+        GridBagConstraints constraints = UiConstants.defineDefaultConstraint(0, 1);
+        constraints.gridwidth = 3;
+        constraints.anchor = WEST;
+        add(
+                label,
+                constraints
+        );
+    }
+
+    private void createScoreDisplay() {
+        JLabel label = new JLabel("Score: " + player.getScore());
+        GridBagConstraints constraints = UiConstants.defineDefaultConstraint(0, 2);
+        constraints.gridwidth = 2;
+        constraints.anchor = WEST;
+        add(
+                label,
+                constraints
+        );
     }
 
     private void createPenaltyLineElements() {
