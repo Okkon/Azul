@@ -77,6 +77,7 @@ public class TileButton extends JButton {
     public void setTile(Tile tile) {
         this.tile = tile;
         this.setBackground(defineColor(tile));
+        this.setText(null);
         defineImage(tile);
     }
 }
