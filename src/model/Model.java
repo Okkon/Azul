@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
@@ -12,8 +13,9 @@ public class Model {
     private List<Player> players;
     private List<Plate> plates;
     private List<Tile> discard;
-    private List<Tile> center;
+    private Center center;
     private List<Tile> bag;
+    private GameStage gameStage;
 
     private final Tile penaltyTile = new Tile(TileColor.PENALTY);
     private Player activePlayer;
@@ -22,6 +24,7 @@ public class Model {
     private UiDelegate uiDelegate;
 
     public Model() {
+        gameStage = GameStage.CHOICE_TILES;
         players = List.of(new Player("Player_1"), new Player("Player_2"));
         activePlayer = players.get(0);
         bag = new ArrayList<>(100);
@@ -30,7 +33,7 @@ public class Model {
         }
         Collections.shuffle(bag);
         discard = new ArrayList<>(100);
-        center = new ArrayList<>(16);
+        center = new Center();
         plates = new ArrayList<>(PLATES_COUNT);
         for (int i = 0; i < PLATES_COUNT; i++) {
             plates.add(new Plate());
@@ -59,7 +62,7 @@ public class Model {
                 if (tile == plateTile) return plate;
             }
         }
-        throw new RuntimeException();
+        throw new RuntimeException("There is no plates containing tile " + tile);
     }
 
     public List<Tile> findPlateTilesOfSameColor(Plate plate, Tile selectedTile) {
@@ -70,20 +73,50 @@ public class Model {
                 .collect(Collectors.toList());
     }
 
-    public void moveTilesToStock(List<Tile> selectedPlateTiles, Plate selectedPlate, StockLine selectedLine) {
+    public void moveTilesToStock(List<Tile> selectedPlateTiles, Place selectedPlace, StockLine selectedLine) {
+        if (selectedPlace instanceof Center) {
+            Center place = (Center) selectedPlace;
+            Optional<Tile> penaltyTile = center.getCenterTiles().get(TileColor.PENALTY).stream().findFirst();
+            penaltyTile.ifPresent(tile -> {
+                center.remove(tile);
+                moveTileToPenaltyLineInner(selectedPlace, tile);
+            });
+        }
         for (Tile selectedPlateTile : selectedPlateTiles) {
-            selectedPlate.remove(selectedPlateTile);
+            selectedPlace.remove(selectedPlateTile);
             if (selectedLine.canAdd(selectedPlateTile)) {
                 selectedLine.add(selectedPlateTile);
-                this.uiDelegate.moveTileFromPlateToStock(selectedPlateTile, selectedPlate, selectedLine);
+                this.uiDelegate.moveTileFromPlateToStock(selectedPlateTile, selectedPlace, selectedLine);
             } else {
-                moveTileToPenaltyLineInner(selectedPlate, selectedPlateTile);
+                moveTileToPenaltyLineInner(selectedPlace, selectedPlateTile);
             }
         }
-        center.addAll(selectedPlate.getTiles());
-        this.uiDelegate.moveTilesFromPlateToCenter(selectedPlate.getTiles(), selectedPlate, center);
-        selectedPlate.getTiles().clear();
+        throwRemainingTilesFromPlate(selectedPlace);
         switchPlayer();
+        allTilesGrabbedCheck();
+    }
+
+    private void allTilesGrabbedCheck() {
+        if (this.center.isEmpty() && allPlatesIsEmpty()){
+            gameStage = GameStage.DISPOSE_TILES;
+            this.uiDelegate.changeGameStage();
+        }
+    }
+
+    private boolean allPlatesIsEmpty() {
+        return plates.stream().allMatch(Plate::isEmpty);
+    }
+
+    private void throwRemainingTilesFromPlate(Place selectedPlace) {
+        if (selectedPlace instanceof Center) {
+            return;
+        }
+        List<Tile> selectedTiles = selectedPlace.getTiles();
+        for (Tile tile : selectedTiles) {
+            center.add(tile);
+        }
+        this.uiDelegate.moveTilesFromPlateToCenter(selectedPlace.getTiles(), selectedPlace, center.getTiles());
+        selectedPlace.getTiles().clear();
     }
 
     private void switchPlayer() {
@@ -93,7 +126,7 @@ public class Model {
         this.uiDelegate.showActivePlayer(activePlayer);
     }
 
-    private void moveTileToPenaltyLineInner(Plate selectedPlate, Tile selectedPlateTile) {
+    private void moveTileToPenaltyLineInner(Place selectedPlate, Tile selectedPlateTile) {
         PenaltyLine penaltyLine = activePlayer.getPenaltyLine();
         if (penaltyLine.hasSpace()) {
             penaltyLine.add(selectedPlateTile);
@@ -104,14 +137,13 @@ public class Model {
         }
     }
 
-    public void moveTileToPenaltyLine(Plate plate, List<Tile> selectedPlateTiles) {
+    public void moveTileToPenaltyLine(Place plate, List<Tile> selectedPlateTiles) {
         for (Tile selectedPlateTile : selectedPlateTiles) {
             plate.remove(selectedPlateTile);
             moveTileToPenaltyLineInner(plate, selectedPlateTile);
         }
-        center.addAll(plate.getTiles());
-        this.uiDelegate.moveTilesFromPlateToCenter(plate.getTiles(), plate, center);
-        plate.getTiles().clear();
+        throwRemainingTilesFromPlate(plate);
         switchPlayer();
+        allTilesGrabbedCheck();
     }
 }

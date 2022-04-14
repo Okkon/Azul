@@ -1,18 +1,14 @@
 package swing;
 
 import lombok.Getter;
-import model.Model;
-import model.Plate;
-import model.Tile;
-import model.TileColor;
+import model.*;
 import swing.controler.SwingController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import static model.Model.PLATES_COUNT;
 
@@ -31,25 +27,30 @@ public class CentralPanel extends JPanel {
 
     private void addTilesToCenter() {
         int x = 0;
+        List<TileButton> tileButtonWithCounts = new ArrayList<>();
         for (TileColor value : TileColor.values()) {
             TileButtonWithCount tileButton = new TileButtonWithCount(value);
+            tileButtonWithCounts.add(tileButton);
+            GridBagConstraints constraints = UiConstants.defineDefaultConstraint(x++, PLATES_COUNT + 1);
             add(
                     tileButton,
-                    UiConstants.defineDefaultConstraint(x++, PLATES_COUNT + 1)
+                    constraints
             );
+            tileButton.addActionListener(e -> {
+                TileButtonWithCount source = (TileButtonWithCount) e.getSource();
+                controller.setSelectedPlaceTiles(source.getTiles(), model.getCenter());
+
+            });
             controller.getTileButtonWithCounts().add(tileButton);
+            controller.getPlaceToButtonsMap().put(model.getCenter(),tileButtonWithCounts);
         }
 
         refreshCentralButtons();
     }
 
     public void refreshCentralButtons() {
-        Map<TileColor, List<Tile>> colorToTiles = model.getCenter()
-                .stream()
-                .collect(Collectors.groupingBy(Tile::getTileColor));
-
         for (TileButtonWithCount button : controller.getTileButtonWithCounts()) {
-            button.setTiles(colorToTiles.get(button.getTileColor()));
+            button.setTiles(model.getCenter().getCenterTiles().get(button.getTileColor()));
         }
     }
 
@@ -69,18 +70,18 @@ public class CentralPanel extends JPanel {
                     TileButton source = (TileButton) e.getSource();
                     Tile selectedTile = source.getTile();
                     Plate selectedPlate = model.findPlateByTile(selectedTile);
-                    controller.setSelectedPlateTiles(model.findPlateTilesOfSameColor(selectedPlate, selectedTile), selectedPlate);
+                    controller.setSelectedPlaceTiles(model.findPlateTilesOfSameColor(selectedPlate, selectedTile), selectedPlate);
                 });
             }
             y++;
-            controller.getPlateToButtonsMap().put(plate, buttonList);
+            controller.getPlaceToButtonsMap().put(plate, buttonList);
         }
     }
 
-    public void removeTileFromPlate(Tile tile, Plate plate) {
-        List<TileButton> buttonsInPlate = this.controller.getPlateToButtonsMap().get(plate);
+    public void removeTileFromPlate(Tile tile, Place plate) {
+        List<TileButton> buttonsInPlate = this.controller.getPlaceToButtonsMap().get(plate);
         for (TileButton tileButton : buttonsInPlate) {
-            if (tileButton.getTile().equals(tile)) {
+            if (Objects.equals(tileButton.getTile(), tile)) {
                 tileButton.setVisible(false);
             }
         }

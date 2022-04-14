@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class Plate {
+public class Plate implements Place {
     private List<Tile> tiles = new ArrayList<>(4);
 
     public void add(Tile tile) {
@@ -15,5 +15,9 @@ public class Plate {
 
     public void remove(Tile plateTile) {
         tiles.remove(plateTile);
+    }
+
+    public boolean isEmpty() {
+        return getTiles().isEmpty();
     }
 }

@@ -5,7 +5,6 @@ import model.*;
 import swing.controler.SwingController;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +64,8 @@ public class PlayerBoard extends JPanel {
             );
             tileButtons.add(tileButton);
             tileButton.addActionListener(e -> {
-                Plate selectedPlate = controller.getSelectedPlate();
-                List<Tile> selectedPlateTiles = controller.getSelectedPlateTiles();
+                Place selectedPlate = controller.getSelectedPlace();
+                List<Tile> selectedPlateTiles = controller.getSelectedPlaceTiles();
                 controller.getModel().moveTileToPenaltyLine(selectedPlate, selectedPlateTiles);
                 controller.clearSelection();
             });
@@ -109,8 +108,10 @@ public class PlayerBoard extends JPanel {
                     }
                     TileButton source = (TileButton) e.getSource();
                     StockLine selectedLine = controller.getStockButtonToStockLine().get(source);
-                    Plate selectedPlate = controller.getSelectedPlate();
-                    List<Tile> selectedPlateTiles = controller.getSelectedPlateTiles();
+                    //дописать разветвление для поиска тайла из центра мб сделать selectedPlace и selectedPlaceTiles методы?
+                    //создать интерфейс Place с методами см. выше, его реализации это Plate Center классы
+                    Place selectedPlate = controller.getSelectedPlace();
+                    List<Tile> selectedPlateTiles = controller.getSelectedPlaceTiles();
                     Model model = controller.getModel();
                     model.moveTilesToStock(selectedPlateTiles, selectedPlate, selectedLine);
                     controller.clearSelection();

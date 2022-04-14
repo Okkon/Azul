@@ -18,6 +18,7 @@ public class UiConstants implements Serializable {
     public static final ImageIcon ICON_YELLOW = getResizedImageIcon("AZUL_YELLOW");
     public static final ImageIcon ICON_BLUE = getResizedImageIcon("AZUL_BLUE");
     public static final ImageIcon ICON_RED = getResizedImageIcon("AZUL_RED");
+    public static final ImageIcon ICON_PENALTY = getResizedImageIcon("AZUL_PENALTY");
 
     private static ImageIcon getResizedImageIcon(final String file_name) {
         return new ImageIcon(

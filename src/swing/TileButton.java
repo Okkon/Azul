@@ -19,21 +19,22 @@ public class TileButton extends JButton {
 
         setDefaultSize();
 
-        this.setBackground(defineColor(tile));
+        this.setBackground(Color.gray);
+        this.setIconTextGap(1);
         defineImage(tile);
     }
 
-    private void defineImage(Tile tile) {
+    protected void defineImage(Tile tile) {
         if (tile == null) {
             return;
         }
         this.setIcon(switch (tile.getTileColor()) {
             case AZURE -> ICON_AZURE;
-            case RED -> ICON_BLACK;
-            case BLACK -> ICON_RED;
+            case RED -> ICON_RED;
+            case BLACK -> ICON_BLACK;
             case BLUE -> ICON_BLUE;
             case YELLOW -> ICON_YELLOW;
-            case PENALTY -> ICON_BLACK;
+            case PENALTY -> ICON_PENALTY;
         });
     }
 
@@ -48,8 +49,7 @@ public class TileButton extends JButton {
         super();
 
         setDefaultSize();
-
-        this.setBackground(defineColorByTileColor(tileColor));
+        this.setBackground(Color.gray);
     }
 
     protected Color defineColor(Tile tile) {
@@ -66,7 +66,7 @@ public class TileButton extends JButton {
             case BLACK -> Color.BLACK;
             case BLUE -> Color.BLUE;
             case YELLOW -> Color.YELLOW;
-            case PENALTY -> Color.GREEN;
+            case PENALTY -> Color.WHITE;
         };
     }
 
@@ -76,7 +76,6 @@ public class TileButton extends JButton {
 
     public void setTile(Tile tile) {
         this.tile = tile;
-        this.setBackground(defineColor(tile));
         this.setText(null);
         defineImage(tile);
     }

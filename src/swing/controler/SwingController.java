@@ -24,12 +24,12 @@ public class SwingController {
     private final Map<TileButton, StockLine> stockButtonToStockLine = new HashMap<>();
     private final Map<Player, PlayerBoard> playerToBoard = new HashMap<>();
     private final Map<StockLine, List<TileButton>> stockLineToTileButtons = new HashMap<>();
-    private final Map<Plate, List<TileButton>> plateToButtonsMap = new HashMap<>();
+    private final Map<Place, List<TileButton>> placeToButtonsMap = new HashMap<>();
     private final Map<PenaltyLine, List<TileButton>> penaltyLineToButtonsMap = new HashMap<>();
     private final List<TileButtonWithCount> tileButtonWithCounts = new ArrayList<>();
 
-    private Plate selectedPlate;
-    private List<Tile> selectedPlateTiles = Collections.emptyList();
+    private Place selectedPlace;
+    private List<Tile> selectedPlaceTiles = Collections.emptyList();
 
     public SwingController(Model model, GameView view) {
         this.model = model;
@@ -41,24 +41,26 @@ public class SwingController {
     }
 
     public void clearSelection() {
-        setSelectedPlateTiles(Collections.emptyList(), null);
+        setSelectedPlaceTiles(Collections.emptyList(), null);
     }
 
-    public void setSelectedPlateTiles(List<Tile> plateTilesToSelect, Plate plateToSelect) {
-        Map<Plate, List<TileButton>> plateToButtonsMap = getPlateToButtonsMap();
+    public void setSelectedPlaceTiles(List<Tile> placeTilesToSelect, Place placeToSelect) {
+        Map<Place, List<TileButton>> plateToButtonsMap = getPlaceToButtonsMap();
         List<TileButton> previouslySelectedButtons =
-                plateToButtonsMap.getOrDefault(this.selectedPlate, Collections.emptyList());
+                plateToButtonsMap.getOrDefault(this.selectedPlace, Collections.emptyList());
         for (TileButton tileButton : previouslySelectedButtons) {
-            if (selectedPlateTiles.contains(tileButton.getTile()))
+            if (selectedPlaceTiles.contains(tileButton.getTile())){
                 tileButton.setBorder(EMPTY_BORDER);
+            }
         }
-        for (TileButton tileButton : plateToButtonsMap.getOrDefault(plateToSelect, Collections.emptyList())) {
-            if (plateTilesToSelect.contains(tileButton.getTile()))
+        for (TileButton tileButton : plateToButtonsMap.getOrDefault(placeToSelect, Collections.emptyList())) {
+            if (placeTilesToSelect.contains(tileButton.getTile())){
                 tileButton.setBorder(SELECTED_BUTTON_BORDER);
+            }
         }
 
-        selectedPlateTiles = plateTilesToSelect;
-        selectedPlate = plateToSelect;
+        selectedPlaceTiles = placeTilesToSelect;
+        selectedPlace = placeToSelect;
     }
 
     public void bindPlayerToBoard(Player player, PlayerBoard playerBoard) {

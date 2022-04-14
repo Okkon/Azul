@@ -12,7 +12,9 @@ import java.util.List;
 public class GameView implements UiDelegate {
 
     private final Model model;
-    private final JTextField infoText;
+    private final JLabel activePlayerText;
+    private final JPanel infoPanel;
+    private final JLabel stageText;
     private PlayerBoard playerBoard1;
     private PlayerBoard playerBoard2;
     private CentralPanel centralPanel;
@@ -20,7 +22,11 @@ public class GameView implements UiDelegate {
 
     public GameView(Model model) {
         this.model = model;
-        infoText = new JTextField("ACTIVE PLAYER : " + model.getActivePlayer().getName());
+        stageText = new JLabel(model.getGameStage().toString());
+        activePlayerText = new JLabel("ACTIVE PLAYER : " + model.getActivePlayer().getName());
+        infoPanel = new JPanel();
+        infoPanel.add(activePlayerText);
+        infoPanel.add(stageText);
     }
 
     public void start() {
@@ -37,7 +43,7 @@ public class GameView implements UiDelegate {
         playerBoard2 = new PlayerBoard(players.get(1), controller);
         centralPanel = new CentralPanel(model, controller);
 
-        f.add(infoText, BorderLayout.NORTH);
+        f.add(infoPanel, BorderLayout.NORTH);
         f.add(playerBoard1, BorderLayout.WEST);
         f.add(playerBoard2, BorderLayout.EAST);
         f.add(centralPanel);
@@ -52,7 +58,7 @@ public class GameView implements UiDelegate {
     }
 
     @Override
-    public void moveTileFromPlateToStock(Tile selectedPlateTile, Plate plate, StockLine selectedLine) {
+    public void moveTileFromPlateToStock(Tile selectedPlateTile, Place plate, StockLine selectedLine) {
         centralPanel.removeTileFromPlate(selectedPlateTile, plate);
         List<TileButton> stockLineButtons = controller.getStockLineToTileButtons().get(selectedLine);
         int indexOfSelectedTile = selectedLine.getTiles().indexOf(selectedPlateTile);
@@ -60,7 +66,7 @@ public class GameView implements UiDelegate {
     }
 
     @Override
-    public void moveTileFromPlateToPenalty(Tile selectedPlateTile, Plate plate, PenaltyLine penaltyLine) {
+    public void moveTileFromPlateToPenalty(Tile selectedPlateTile, Place plate, PenaltyLine penaltyLine) {
         centralPanel.removeTileFromPlate(selectedPlateTile, plate);
         List<TileButton> penaltyLineButtons = controller.getPenaltyLineToButtonsMap().get(penaltyLine);
         int indexOfSelectedTile = penaltyLine.getTiles().indexOf(selectedPlateTile);
@@ -68,12 +74,12 @@ public class GameView implements UiDelegate {
     }
 
     @Override
-    public void moveTileFromPlateToDiscard(Tile selectedPlateTile, Plate plate, List<Tile> discard) {
+    public void moveTileFromPlateToDiscard(Tile selectedPlateTile, Place plate, List<Tile> discard) {
         centralPanel.removeTileFromPlate(selectedPlateTile, plate);
     }
 
     @Override
-    public void moveTilesFromPlateToCenter(List<Tile> tiles, Plate plate, List<Tile> center) {
+    public void moveTilesFromPlateToCenter(List<Tile> tiles, Place plate, List<Tile> center) {
         for (Tile tile : tiles) {
             centralPanel.removeTileFromPlate(tile, plate);
         }
@@ -82,6 +88,11 @@ public class GameView implements UiDelegate {
 
     @Override
     public void showActivePlayer(Player activePlayer) {
-        infoText.setText("ACTIVE PLAYER : " + activePlayer.getName());
+        activePlayerText.setText("ACTIVE PLAYER : " + activePlayer.getName());
+    }
+
+    @Override
+    public void changeGameStage() {
+        stageText.setText(model.getGameStage().toString());
     }
 }
