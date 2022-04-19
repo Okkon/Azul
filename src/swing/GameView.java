@@ -7,6 +7,10 @@ import swing.controler.SwingController;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
+
+import static swing.controler.SwingController.SELECTED_BUTTON_BORDER;
+import static swing.controler.SwingController.SELECTED_STOCK_LINE_BORDER;
 
 @Getter
 public class GameView implements UiDelegate {
@@ -94,5 +98,27 @@ public class GameView implements UiDelegate {
     @Override
     public void changeGameStage() {
         stageText.setText(model.getGameStage().toString());
+    }
+
+    @Override
+    public void moveTileToMainBoard(StockLine stockLine, Point pointOfButton) {
+        if (!stockLine.hasSpace()) {
+        }
+    }
+
+    @Override
+    public void selectStockLine() {
+        List<StockLine> stockLines = model.getActivePlayer().getStockLines();
+        for (StockLine stockLine : stockLines) {
+            if (!stockLine.hasSpace()) {
+                controller.getStockLineToTileButtons().get(stockLine).stream()
+                        .forEach((tileButton -> tileButton.setBorder(SELECTED_STOCK_LINE_BORDER)));
+
+                int y = stockLines.indexOf(stockLine);
+                List<TileButton> selectedButtons = model.getActivePlayer().getMainFieldButtons().get(y);
+                selectedButtons.stream()
+                        .forEach(tileButton -> tileButton.setBorder(SELECTED_BUTTON_BORDER));
+            }
+        }
     }
 }

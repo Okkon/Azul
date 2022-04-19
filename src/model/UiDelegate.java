@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.*;
 import java.util.List;
 
 public interface UiDelegate {
@@ -14,4 +15,8 @@ public interface UiDelegate {
     void showActivePlayer(Player activePlayer);
 
     void changeGameStage();
+
+    void moveTileToMainBoard(StockLine stockLine, Point pointOfButton);
+
+    void selectStockLine();
 }

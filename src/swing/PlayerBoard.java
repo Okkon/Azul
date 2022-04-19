@@ -75,6 +75,7 @@ public class PlayerBoard extends JPanel {
 
     private void createMainFieldElements() {
         for (int x = 0; x < MAX_STOCK_LINE_SIZE; x++) {
+            List<TileButton> tileButtons = new ArrayList<>();
             for (int y = 0; y < 5; y++) {
                 TileButton tileButton = new TileButton((Tile) null);
                 tileButton.setText(String.format("%s:%s", x, y));
@@ -82,7 +83,13 @@ public class PlayerBoard extends JPanel {
                         tileButton,
                         UiConstants.defineDefaultConstraint(x + MAX_STOCK_LINE_SIZE, y)
                 );
+                Point pointOfButton = new Point(x, y);
+                tileButtons.add(tileButton);
+                tileButton.addActionListener(e -> {
+                    controller.getModel().moveTilesToMainBoard(pointOfButton);
+                });
             }
+            player.getMainFieldButtons().add(tileButtons);
         }
     }
 
@@ -103,7 +110,7 @@ public class PlayerBoard extends JPanel {
                 );
                 controller.bindStockButtonToLines(tileButton, stockLine);
                 tileButton.addActionListener(e -> {
-                    if (!player.equals(controller.getModel().getActivePlayer())){
+                    if (!player.equals(controller.getModel().getActivePlayer())) {
                         return;
                     }
                     TileButton source = (TileButton) e.getSource();

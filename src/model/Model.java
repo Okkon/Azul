@@ -21,7 +21,8 @@ public class Model {
     private final Tile penaltyTile = new Tile(TileColor.PENALTY);
     private Player activePlayer;
     public static final int PLAYER_COUNT = 2;
-    public static final int PLATES_COUNT = PLAYER_COUNT * 2 + 1;
+    public static final int PLATES_COUNT = 2;
+//    public static final int PLATES_COUNT = PLAYER_COUNT * 2 + 1;
     private UiDelegate uiDelegate;
 
     public Model() {
@@ -101,12 +102,24 @@ public class Model {
         }
     }
 
-
+    public void moveTilesToMainBoard(Point pointOfButton) {
+        this.getActivePlayer().getStockLines().stream().
+                forEach(
+                        (stockLine) -> {
+                            System.out.println("SIZE " + stockLine.getSize());
+                            if (!stockLine.hasSpace()) {
+                                System.out.println(pointOfButton.toString());
+                                this.uiDelegate.moveTileToMainBoard(stockLine, pointOfButton);
+                            }
+                        });
+    }
 
     private void allTilesGrabbedCheck() {
         if (this.center.isEmpty() && allPlatesIsEmpty()) {
             gameStage = GameStage.DISPOSE_TILES;
+            System.out.println("game stage changed");
             this.uiDelegate.changeGameStage();
+            this.uiDelegate.selectStockLine();
         }
     }
 
