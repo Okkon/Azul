@@ -42,6 +42,11 @@ public class Center implements Place {
     }
 
     public boolean isEmpty() {
-        return centerTiles.isEmpty();
+        for (Map.Entry<TileColor, List<Tile>> entry : centerTiles.entrySet()) {
+            if (!entry.getValue().isEmpty()){
+                return false;
+            }
+        }
+        return true;
     }
 }

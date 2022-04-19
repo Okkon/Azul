@@ -2,6 +2,7 @@ package model;
 
 import lombok.Data;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -74,14 +75,7 @@ public class Model {
     }
 
     public void moveTilesToStock(List<Tile> selectedPlateTiles, Place selectedPlace, StockLine selectedLine) {
-        if (selectedPlace instanceof Center) {
-            Center place = (Center) selectedPlace;
-            Optional<Tile> penaltyTile = center.getCenterTiles().get(TileColor.PENALTY).stream().findFirst();
-            penaltyTile.ifPresent(tile -> {
-                center.remove(tile);
-                moveTileToPenaltyLineInner(selectedPlace, tile);
-            });
-        }
+        checkPenaltyTile(selectedPlace);
         for (Tile selectedPlateTile : selectedPlateTiles) {
             selectedPlace.remove(selectedPlateTile);
             if (selectedLine.canAdd(selectedPlateTile)) {
@@ -96,8 +90,21 @@ public class Model {
         allTilesGrabbedCheck();
     }
 
+    private void checkPenaltyTile(Place selectedPlace) {
+        if (selectedPlace instanceof Center) {
+            Center place = (Center) selectedPlace;
+            Optional<Tile> penaltyTile = center.getCenterTiles().get(TileColor.PENALTY).stream().findFirst();
+            penaltyTile.ifPresent(tile -> {
+                center.remove(tile);
+                moveTileToPenaltyLineInner(selectedPlace, tile);
+            });
+        }
+    }
+
+
+
     private void allTilesGrabbedCheck() {
-        if (this.center.isEmpty() && allPlatesIsEmpty()){
+        if (this.center.isEmpty() && allPlatesIsEmpty()) {
             gameStage = GameStage.DISPOSE_TILES;
             this.uiDelegate.changeGameStage();
         }
@@ -127,6 +134,7 @@ public class Model {
     }
 
     private void moveTileToPenaltyLineInner(Place selectedPlate, Tile selectedPlateTile) {
+       checkPenaltyTile(selectedPlate);
         PenaltyLine penaltyLine = activePlayer.getPenaltyLine();
         if (penaltyLine.hasSpace()) {
             penaltyLine.add(selectedPlateTile);
