@@ -10,8 +10,6 @@ import swing.TileButtonWithCount;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.security.KeyPair;
 import java.util.*;
 import java.util.List;
 
@@ -20,7 +18,6 @@ public class SwingController {
 
     public static final EmptyBorder EMPTY_BORDER = new EmptyBorder(1, 1, 1, 1);
     public static final LineBorder SELECTED_BUTTON_BORDER = new LineBorder(Color.MAGENTA, 4);
-    public static final LineBorder SELECTED_STOCK_LINE_BORDER = new LineBorder(Color.GREEN, 4);
     private final Model model;
     private final GameView view;
 
@@ -30,6 +27,7 @@ public class SwingController {
     private final Map<Place, List<TileButton>> placeToButtonsMap = new HashMap<>();
     private final Map<PenaltyLine, List<TileButton>> penaltyLineToButtonsMap = new HashMap<>();
     private final List<TileButtonWithCount> tileButtonWithCounts = new ArrayList<>();
+
     private Place selectedPlace;
     private List<Tile> selectedPlaceTiles = Collections.emptyList();
 

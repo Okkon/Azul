@@ -22,10 +22,14 @@ public class TileButtonWithCount extends TileButton {
         this.tileColor = tileColor;
         this.setVisible(false);
         this.setForeground(Color.WHITE);
+//        setIconTextGap(0);
+//        setBorder(null);
+//        setHorizontalAlignment(SwingConstants.RIGHT);
+//        this.setHorizontalTextPosition(SwingConstants.LEADING);
 
         countLabel.setAlignmentX(0.5f);
-        countLabel.setOpaque(true);
-        countLabel.setBackground(new Color(0xFFE4E4EC, true));
+        countLabel.setOpaque(false);
+        countLabel.setBackground(new Color(0x34000001, true));
         countLabel.setForeground(new Color(0xFF090809, true));
         countLabel.setFont(new Font("Arial", Font.BOLD, 20));
         this.add(countLabel);
